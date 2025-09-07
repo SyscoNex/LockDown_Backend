@@ -81,6 +81,7 @@ exports.sessionSummaryByModelType = async (req, res) => {
     }
 
     const summary = {};
+    let cheatingThresholdExceeded = false;
 
     session.modelResults.forEach(result => {
       const { type, modelOutput, confidence } = result;
@@ -126,13 +127,24 @@ exports.sessionSummaryByModelType = async (req, res) => {
 
     // Compute average confidence
     Object.keys(summary).forEach(type => {
-      const { confidenceSum, confidenceCount } = summary[type];
+      const { confidenceSum, confidenceCount, total, trueCount } = summary[type];
       summary[type].averageConfidence =
         confidenceCount > 0 ? Number((confidenceSum / confidenceCount).toFixed(4)) : null;
 
       delete summary[type].confidenceSum;
       delete summary[type].confidenceCount;
+
+      // Threshold check
+      const threshold = Math.floor(total / 2); 
+      if (trueCount > threshold) {
+        cheatingThresholdExceeded = true;
+      }
+
     });
+
+
+
+
 
     // Duration in minutes (if stored as seconds)
     let durationMinutes = null;
@@ -161,7 +173,8 @@ exports.sessionSummaryByModelType = async (req, res) => {
       durationMinutes,
       summary,
       backgroundApps,
-      copiedTexts
+      copiedTexts,
+      cheatingThresholdExceeded
     });
 
   } catch (error) {
