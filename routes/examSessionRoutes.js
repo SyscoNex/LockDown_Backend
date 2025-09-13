@@ -8,7 +8,8 @@ const {
   endExamSession,
   sessionSummaryByModelType,
   addBackgroundApps,
-  addCopiedText
+  addCopiedText,
+  addTypedText
   
 } = require('../controllers/examSessionController');
 
@@ -17,6 +18,7 @@ router.post('/endExamSession', endExamSession)
 router.post('/sessionSummaryByModelType', sessionSummaryByModelType)
 router.post('/addBackgroundAppData', addBackgroundApps)
 router.post('/addCopiedText', addCopiedText)
+router.post('/addTypedText', addTypedText)
 
 
 module.exports = router;

@@ -167,6 +167,14 @@ exports.sessionSummaryByModelType = async (req, res) => {
         typeof item.confidence === 'number' ? item.confidence : null
     })) || [];
 
+    const typedTexts = session.typedTexts?.map(item => ({
+      text: item.text,
+      timestamp: item.timestamp?.toISOString() || '-',
+      modelOutput: item.modelOutput || null,
+      confidence:
+        typeof item.confidence === 'number' ? item.confidence : null
+    })) || [];
+
     return res.status(200).json({
       sessionId: session._id,
       studentId: session.student,
@@ -174,6 +182,7 @@ exports.sessionSummaryByModelType = async (req, res) => {
       summary,
       backgroundApps,
       copiedTexts,
+      typedTexts,
       cheatingThresholdExceeded
     });
 
@@ -315,6 +324,34 @@ exports.addCopiedText = async (req, res) => {
     res.status(200).json({ message: "Copied text with model result saved" });
   } catch (error) {
     console.error("Error saving copied text:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.addTypedText = async (req, res) => {
+  const { studentId, typedText, modelOutput, confidence, timestamp } = req.body;
+
+  if (!studentId || !typedText) {
+    return res.status(400).json({ message: "Invalid request" });
+  }
+
+  try {
+    const session = await ExamSession.findOne({ student: studentId, endedAt: null });
+    if (!session) {
+      return res.status(404).json({ message: "Active session not found" });
+    }
+
+    session.typedTexts.push({
+      text: typedText,
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
+      modelOutput: typeof modelOutput === 'string' ? modelOutput : undefined,
+      confidence: typeof confidence === 'number' ? confidence : undefined
+    });
+
+    await session.save();
+    res.status(200).json({ message: "Typed text with model result saved" });
+  } catch (error) {
+    console.error("Error saving Typed text:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

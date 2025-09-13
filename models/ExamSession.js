@@ -21,6 +21,13 @@ const CopiedTextSchema = new mongoose.Schema({
   confidence: { type: Number } 
 });
 
+const TypedTextSchema = new mongoose.Schema({
+  text: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+  modelOutput: { type: String },         
+  confidence: { type: Number } 
+});
+
 
 
 
@@ -32,6 +39,7 @@ const ExamSessionSchema = new mongoose.Schema({
   modelResults: [ModelResultSchema], 
   backgroundApps: [BackgroundAppSchema],
   copiedTexts: [CopiedTextSchema],
+  typedTexts: [TypedTextSchema],
   summary: { type: String },
 });
 
