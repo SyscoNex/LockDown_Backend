@@ -10,7 +10,7 @@ const studentSchema = new mongoose.Schema({
   loggedInAt: { type: Date },
   loggedOutAt: { type: Date }
 }, {
-  timestamps: true // Adds createdAt and updatedAt automatically
+  timestamps: true 
 });
 
 module.exports = mongoose.model('Student', studentSchema);

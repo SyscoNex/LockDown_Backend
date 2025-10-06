@@ -4,11 +4,13 @@ const app = express();
 const PORT = 3000;
 const connectDB = require('./database')
 const cors = require('cors');
+const path = require('path');
 
 // Connect to MongoDB
 connectDB();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
   origin: 'http://localhost:5173',  
@@ -16,10 +18,19 @@ app.use(cors({
 }));
 
 
+// serve /uploads as static
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  fallthrough: true,
+  
+}));
+
+
+
 const userRoutes = require('./routes/user');
 const studentRoutes = require('./routes/studentRoutes');
 const examSession = require('./routes/examSessionRoutes')
 const teacherRoutes = require('./routes/teacherRoutes')
+const face = require('./routes/facepose')
 
 
 
@@ -27,6 +38,7 @@ app.use('/api', userRoutes);
 app.use('/api/student', studentRoutes)
 app.use('/api/examSession', examSession)
 app.use('/api/teacher', teacherRoutes)
+app.use('/api/face', face)
 
 // Example route
 app.get('/', (req, res) => {

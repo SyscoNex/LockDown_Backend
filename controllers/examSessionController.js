@@ -27,7 +27,7 @@ exports.updateExamSession = async (req, res) => {
   });
 
   await session.save();
-  res.status(200).json({ message: "Model result saved" });
+  res.status(200).json({ message: "Model result saved" , sessionId: session._id,});
 }
 
 
