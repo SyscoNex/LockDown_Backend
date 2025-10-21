@@ -142,6 +142,32 @@ exports.sessionSummaryByModelType = async (req, res) => {
 
     });
 
+    // collect TRUE multihuman events with time and humans detected
+    const multiHumanTrueEvents = (session.modelResults || [])
+      .filter(r => {
+        const t = (r.type || '').toLowerCase();
+        const isMultiHuman = t === 'multihuman' || t === 'multihuman'; 
+        const out = (r.modelOutput || '').toString().trim().toLowerCase();
+        return isMultiHuman && (out === 'true' || out === '1');
+      })
+      .map(r => {
+        // prefer subdoc timestamp; fallback to ObjectId timestamp if needed
+        const when = r.timestamp
+          ? new Date(r.timestamp)
+          : (r._id && typeof r._id.getTimestamp === 'function')
+              ? r._id.getTimestamp()
+              : null;
+
+        // humans detected is stored in `confidence` for this type in your app
+        const humansNum = Number(r.confidence);
+        return {
+          detectedAt: when ? when.toISOString() : null,
+          humans: Number.isFinite(humansNum) ? humansNum : null
+        };
+      })
+      
+      .sort((a, b) => new Date(a.detectedAt) - new Date(b.detectedAt));
+
 
 
 
@@ -183,7 +209,8 @@ exports.sessionSummaryByModelType = async (req, res) => {
       backgroundApps,
       copiedTexts,
       typedTexts,
-      cheatingThresholdExceeded
+      cheatingThresholdExceeded,
+      multiHumanTrueEvents
     });
 
   } catch (error) {
