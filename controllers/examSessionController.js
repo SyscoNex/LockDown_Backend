@@ -348,10 +348,10 @@ exports.addCopiedText = async (req, res) => {
     });
 
     await session.save();
-    res.status(200).json({ message: "Copied text with model result saved" });
+    res.status(200).json({ message: "Copied text with model result saved",  sessionId: session._id });
   } catch (error) {
     console.error("Error saving copied text:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", });
   }
 };
 

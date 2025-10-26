@@ -31,6 +31,7 @@ const studentRoutes = require('./routes/studentRoutes');
 const examSession = require('./routes/examSessionRoutes')
 const teacherRoutes = require('./routes/teacherRoutes')
 const face = require('./routes/facepose')
+const pasteRoutes = require('./routes/pasteRoutes')
 
 
 
@@ -39,6 +40,7 @@ app.use('/api/student', studentRoutes)
 app.use('/api/examSession', examSession)
 app.use('/api/teacher', teacherRoutes)
 app.use('/api/face', face)
+app.use('/api/paste', pasteRoutes)
 
 // Example route
 app.get('/', (req, res) => {
